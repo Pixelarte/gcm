@@ -22,7 +22,7 @@
     </script>
 </head>
 <body>
-<a href="#" id="subscribe" style="display:none;">Subscribe</a>
+<a href="#" id="subscribe" style="display:none;"></a>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="assets/js/main.min.js"></script>

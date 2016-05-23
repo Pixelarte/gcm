@@ -20,7 +20,7 @@ module.exports = function(grunt) {
           my_target: {
             files: {
               'assets/js/main.min.js': ['src/js/main.js'],
-              'serviceWorker/sw.min.js': ['src/serviceWorker/sw.js']
+              'sw.min.js': ['src/serviceWorker/sw.js']
             }
           }
     },

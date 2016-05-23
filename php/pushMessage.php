@@ -10,63 +10,62 @@
 	
 
 
-	$consulta="SELECT * FROM `registro` ORDER BY `id` ASC";
+	$consulta="SELECT * FROM `registro` WHERE `subscrito`=true ORDER BY `id` ASC";
 	$resultado = $wpdb->get_results($consulta);
     
 
 	foreach ($resultado as $index) { 
 
-       // print_r($index);
-		
-
-  $data = array( 'message' => 'Hello World!' );
-  $apikey="AIzaSyB3bqW0J8E5c9cCx-QE9HflRIWGhnU9MmU"; //key servidor
-  //$url="https://android.googleapis.com/gcm/send";
-  $url="https://gcm-http.googleapis.com/gcm/send";
-  $post=array(
-    'registration_ids'  => array($index->endPoint),
-    'data' => $data
-    );
-  $headers = array( 
-        'Authorization: key='.$apikey,
-        'Content-Type: application/json'
+     
+      $data = array( 'message' => 'Hello World!' );
+      $apikey="AIzaSyB3bqW0J8E5c9cCx-QE9HflRIWGhnU9MmU"; //key servidor
+      //$url="https://android.googleapis.com/gcm/send";
+      $url="https://gcm-http.googleapis.com/gcm/send";
+      $post=array(
+        'registration_ids'  => array($index->endPoint),
+        'data' => $data
         );
+      $headers = array( 
+            'Authorization: key='.$apikey,
+            'Content-Type: application/json'
+            );
 
- // Initialize curl handle       
-    $ch = curl_init();
 
-    // Set URL to GCM endpoint      
-    curl_setopt( $ch, CURLOPT_URL, $url );
+     // Initialize curl handle       
+        $ch = curl_init();
 
-    // Set request method to POST       
-    curl_setopt( $ch, CURLOPT_POST, true );
+        // Set URL to GCM endpoint      
+        curl_setopt( $ch, CURLOPT_URL, $url );
 
-    // Set our custom headers       
-    curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+        // Set request method to POST       
+        curl_setopt( $ch, CURLOPT_POST, true );
 
-    // Get the response back as string instead of printing it       
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        // Set our custom headers       
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
 
-    // Set JSON post data
-    curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $post ) );
+        // Get the response back as string instead of printing it       
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 
-    // Actually send the push 
+        // Set JSON post data
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $post ) );
 
-    $result = curl_exec( $ch );
+        // Actually send the push 
 
-    
+        $result = curl_exec( $ch );
 
-    // Error handling
-    if ( curl_errno( $ch ) )
-    {
-        echo 'GCM error: ' . curl_error( $ch );
-    }
+        
 
-    // Close curl handle
-    curl_close( $ch );
+        // Error handling
+        if ( curl_errno( $ch ) )
+        {
+            echo 'GCM error: ' . curl_error( $ch );
+        }
 
-    // Debug GCM response       
-    echo $result;
+        // Close curl handle
+        curl_close( $ch );
+
+        // Debug GCM response       
+        echo $result;
 
 
 
