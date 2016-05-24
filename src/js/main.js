@@ -20,7 +20,7 @@ function initServiceWorker()
 
  	if ('serviceWorker' in navigator) { 
  		console.info('Service Worker is supported'); 
-	    navigator.serviceWorker.register('/sw.min.js').then(initialiseState);  
+	    navigator.serviceWorker.register('/gcm/sw.min.js').then(initialiseState);  
 	} else {  
 	    console.warn('Service workers aren\'t supported in this browser.');  
 

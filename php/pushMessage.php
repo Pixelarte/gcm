@@ -7,14 +7,69 @@
 	
 	global $wpdb;  
 
-	
+  $url="https://gcm-http.googleapis.com/gcm/send";
+  $apikey="AIzaSyB3bqW0J8E5c9cCx-QE9HflRIWGhnU9MmU"; //key servidor
+  $header = array( 
+            'Authorization: key='.$apikey,
+            'Content-Type: application/json'
+            );
 
+  $posts=array();
+  $idRegistrados=array();
 
 	$consulta="SELECT * FROM `registro` WHERE `subscrito`=true ORDER BY `id` ASC";
-	$resultado = $wpdb->get_results($consulta);
+	$resultadoQuery = $wpdb->get_results($consulta);
     
+  foreach ($resultadoQuery as $index) { 
+        array_push($posts,array(
+             'registration_ids'  => array($index->endPoint)
+        ) );
+        array_push($idRegistrados, $index->id);
+  }
 
-	foreach ($resultado as $index) { 
+  $resultado = array();
+  $curly = array();
+  $pm = curl_multi_init();
+  foreach ($posts as $id => $d) {
+        $curly[$id] = array('curl'=>curl_init(),'idRegistro'=>$idRegistrados[$id]);
+        curl_setopt($curly[$id]['curl'], CURLOPT_URL, $url);
+        curl_setopt($curly[$id]['curl'], CURLOPT_POST, true);
+        curl_setopt($curly[$id]['curl'], CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curly[$id]['curl'], CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curly[$id]['curl'], CURLOPT_POSTFIELDS, json_encode( $d ) );
+        curl_multi_add_handle($pm, $curly[$id]['curl']);
+  }
+
+
+  $running = null;
+  do {
+    curl_multi_exec($pm, $running);
+  } while ($running);
+
+
+  foreach($curly as $id => $c) {
+      curl_multi_remove_handle($pm, $c['curl']);
+      $resultado[$id] = json_decode(curl_multi_getcontent($c['curl']),true);
+  }
+
+  curl_multi_close($pm);
+
+  foreach ($resultado as $i => $o) {
+    $success;
+    if($o['success']=="1"){
+      $success="success";
+    }else{
+      $success="failure";
+    }
+
+    $insert  = $wpdb->prepare("INSERT INTO `push` (`idRegistro`,`resultado`) VALUES (%s,%s)", $curly[$i]['idRegistro'],$success);
+    $wpdb->query($insert);
+
+  }
+
+
+
+	/*foreach ($resultado as $index) { 
 
      
       $data = array( 'message' => 'Hello World!' );
@@ -23,7 +78,7 @@
       $url="https://gcm-http.googleapis.com/gcm/send";
       $post=array(
         'registration_ids'  => array($index->endPoint),
-        'data' => $data
+        'data' => array('hola'=>'holap')//$data
         );
       $headers = array( 
             'Authorization: key='.$apikey,
@@ -70,7 +125,7 @@
 
 
 	}
-	
+	*/
 
 
 ?>	
